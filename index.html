@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>留在加拿大VS回流？</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--tx:#1f2933;--mu:#6b7280;--ac:#b4372c;--ac2:#2f6f6b;--bd:#e3ded3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181b;--card:#1f2428;--tx:#e8e6e1;--mu:#9aa3ab;--ac:#e2796d;--ac2:#6cb8b2;--bd:#343b41}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:14px}
+h1{font-size:28px;margin:8px 0}h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:12px 0 4px}
+.mu{color:var(--mu);font-size:14px}.note{font-size:13px;color:var(--mu)}
+button{font:inherit;cursor:pointer}
+.opt{display:block;width:100%;text-align:left;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:8px 0}
+.opt.sel{border-color:var(--ac2);background:color-mix(in srgb,var(--ac2) 14%,var(--card))}
+.opt:disabled{opacity:.45}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:10px;padding:12px 20px;margin:6px 6px 0 0}
+.btn.g{background:transparent;color:var(--mu);border:1px solid var(--bd)}.btn:disabled{opacity:.4}
+.bar{height:6px;background:var(--bd);border-radius:4px;margin:6px 0 14px}.bar i{display:block;height:100%;background:var(--ac2);border-radius:4px}
+.scale{display:flex;justify-content:space-between;margin:16px 4px}
+.dot{width:44px;height:44px;border-radius:50%;border:2px solid var(--bd);background:var(--card);color:var(--tx)}
+.dot.sel{background:var(--ac2);border-color:var(--ac2);color:#fff}
+.lg{font-size:13px;color:var(--mu);margin:4px 0}
+select,textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);margin:4px 0 10px}
+.tag{display:inline-block;background:var(--ac);color:#fff;border-radius:6px;padding:2px 10px;font-size:14px}
+.warn{border-left:4px solid var(--ac);padding:8px 12px;margin:10px 0;background:color-mix(in srgb,var(--ac) 8%,var(--card));border-radius:6px}
+.big{font-size:44px;font-weight:700;color:var(--ac)}
+.tw{overflow-x:auto}table{border-collapse:collapse;font-size:14px;width:100%}td,th{border-bottom:1px solid var(--bd);padding:6px;text-align:left}
+li{margin:6px 0}label.ck{display:block;margin:6px 0}
+@media print{.noprint{display:none}body{background:#fff}}
+</style></head><body><main id="app"></main>
+<script>
+const facts={as_of:"2026-11-07",levels_plan:{total_pr_2026:380000,total_pr_range:[350000,420000],federal_high_skilled_2026:109000,federal_high_skilled_range:[85000,120000],pnp_2026:91500,federal_high_skilled_2027:111000,pnp_2027:92500},
+cutoffs_2026:{cec:[507,523],ee_pnp:[761,805],french:[382,435],healthcare:[467,475],trades:[476,477],transport:[470,477],senior_managers:[389,429],physicians:[169,223]},
+latest_draws:{french:{date:"2026-10-27",crs:407,invitations:5000},cec:{date:"2026-10-15",crs:519,invitations:2500},ee_pnp:{date:"2026-10-26",crs:761,invitations:792},transport:{date:"2026-10-28",crs:477,invitations:150}},
+pool:{size:228724,as_of:"2026-10-25",gte_481:45826,gte_501:21322},
+changes:[{date:"2026-11-03",note:"EE 计分改革：调整加拿大工作经验与 job offer 给分；所有 job offer 不再需要 LMIA；系统重算约两周，期间暂停邀请轮"},{date:"2026-06-25",note:"OINP 原 8 个通道全部关闭，合并为 Ontario Workforce Priority Stream（3 条路径）"},{date:"2026-02-18",note:"EE 类别定向细分，新增医生/科研/高级管理；农业类别移除"},{date:"2026-01-01",note:"公立 DLI 硕博免 PAL/TAL"}],
+rules:{category_min_experience_years:1,category_experience_window_years:3,pnp_crs_bonus:600,french_clb_required:7,french_crs_bonus:{english_clb4_or_below:25,english_clb5_plus:50},pgwp_language:{university:"CLB 7",college:"CLB 5"},work_permit_to_pr_spots:33000},
+disclaimer:"以上数据截至 2026 年 11 月 7 日。加拿大移民规则在 2026 年经历了多次调整，且 2026 年 11 月 3 日起的 EE 计分改革仍在重算中，新一轮分数线尚未形成。本测试只做处境梳理，不构成移民建议；具体方案请以 IRCC 官网与持牌移民顾问（RCIC）的正式意见为准。"};
+const FIN="这份结果不是判决，是一张你现在的位置图。它基于 2026 年 11 月 7 日之前的公开政策信息，以及你自己填的答案。政策会变，人也会变。任何关于身份的决定，请以 IRCC 官方信息和持牌移民顾问的意见为准；任何关于去留的决定，请以你自己的感受为准——这张图只是帮你把感受说清楚一点。";
+const SC=[10,30,55,80,100],DN={1:"身份可行性",2:"情感与归属",3:"生活与身心",4:"职业与经济",5:"生活方式与关系"},DW={1:.24,2:.26,3:.14,4:.21,5:.15};
+const sc=(id,d,w,nm,s,o,x)=>Object.assign({id,d,w,nm,s,o},x||{});
+const Q=[
+sc("Q1",1,.3,"条件盘点","下面这些“移民筹码”，你**目前真实具备**哪些？",[["过去 3 年内有累计 1 年以上加拿大全职工作经验（TEER 0–3）",45],["我的职业落在 2026 年真正开过定向抽签的类别（医护、技工、运输、高级管理、医生）",30],["我所在的省份或职业有省提名机会（本地雇主长期雇佣、偏远地区、紧缺职业）",30],["我有加拿大硕士或博士学位",10],["我有稳定雇主，愿意给我出长期 offer",10],["以上都没有",0]],{t:"m",n:"请只选当下十拿九稳的。"}),
+sc("Q2",1,.25,"语言","你目前的英语（雅思 / CELPIP）成绩大致在哪个水平？",[["听说读写都在 CLB 9 以上",100],["大致在 CLB 7–8",80],["大致在 CLB 5–6",55],["还没正式考过，估计在 CLB 5 左右",35],["英语是我最大的短板，CLB 4 及以下",10]]),
+sc("Q3",1,.2,"法语投入意愿","2026 年法语类别的抽签线在 **382–435 分**（10 月 27 日那轮 407 分，一次发了 5,000 个邀请），但是法语四项都到 CLB 7通常要 **12–18 个月的高强度投入**，你会怎么做？",[["我在学法语，会继续冲到 CLB 7",100],["我愿意投入 12–18 个月，认真冲一次",85],["我愿意学，但只能业余轻量，学多久算多久",55],["我不愿意为移民学法语",10]]),
+sc("Q4",1,.15,"等待意愿","如果今天收到PR 或 省提名邀请，你可能还要等 6 个月–3 年，中间要续工签、补材料、可能还得换通道。你能接受吗？",[["能，我已经按这个时间表在准备",100],["能，但我希望不超过 2 年",75],["很难，我需要一个明确的时间点",45],["不能，我不想再把生活悬着",15]]),
+sc("Q5",1,.1,"Plan B","如果最后没拿到 PR，你会如何选择？",[["还是会想办法留下（换通道、换省份、再读一个学位）",90],["去第三国发展（美国、欧洲、澳洲）",55],["到时候看情况，现在不想定",45],["回国",25]]),
+sc("Q6",2,.25,"可求助的人","如果今晚遇到一件很糟的事，情绪崩溃，你能在加拿大叫出来几个人？",[["3 个以上，随叫随到",100],["1–2 个",70],["有，但都是同事或同学，不太好意思麻烦人家",40],["基本没有",10]]),
+sc("Q7",2,.2,"归属感","“加拿大是我的家” 这句话对你来说有多成立？",["完全不成立","大部分不成立","说不清","大体成立","基本成立"],{t:"s"}),
+sc("Q8",2,.2,"家庭照护与牵挂","国内家里对你的需要更像哪一种？",[["父母家人都好，不需要我照顾，一年回 1–2 次就够",100],["家里需要我，但一年回 1–2 次还能应付",65],["家里明确需要我长期照顾（老人、病人、孩子）",20],["我说不好，但每次回国都很难再走",35]]),
+sc("Q9",2,.15,"对回国的第一反应","“回国生活”这四个字你的第一反应是什么？",[["松一口气，那是我熟悉的地方",20],["有机会，但也有点不甘心",45],["压力很大（工作强度、人际、房价、孩子上学）",85],["没什么感觉，两边都能过",60]]),
+sc("Q10",2,.2,"社区连接","除了同事和同学，你在加拿大有没有“自己的生活圈”？（球队、教会、志愿组织、邻居、兴趣社群都算）",[["有，而且我是其中比较活跃的一员",100],["有，但只是偶尔参加",70],["没有，我的生活基本是家和公司两点一线",35],["没想过要找",20]]),
+sc("Q11",3,.55,"冬季","加拿大的冬天（11 月到次年 3 月），对你来说是什么？",["每年都很难熬，明显影响情绪","挺难熬，但能扛","一般，谈不上喜欢也谈不上讨厌","还算适应","已经完全适应，甚至喜欢"],{t:"s",full:1}),
+sc("Q12",3,.45,"医疗","过去两年，你和加拿大医疗系统的真实接触是？",[["基本没看过病，或只看过一两次，体验可以接受",100],["看过几次，等待时间能忍，但确实慢",70],["有慢性病或需要长期随访，等待已经影响到治疗",25],["因为等太久，我最后回国看或找私立解决了",35]]),
+sc("Q13",4,.35,"收入与结余","把税后收入和每月能存下的钱，和“在国内做同等岗位”比一比，哪一句最接近？",[["这边收入明显更高，每月还能存下钱",100],["这边收入差不多，但开支高，存得少",55],["这边收入更低，基本存不下钱",20],["没认真比较过",45]]),
+sc("Q14",4,.2,"国内资产与启动成本","如果回国，你的“启动成本”大概是什么样？",[["国内有房（最好无贷）有车，回去几乎没有落脚成本",30],["国内有房但有贷款，回去要背房贷",45],["国内没有房产，回去要从租房开始",60],["家里能支持，钱不是主要问题",50]]),
+sc("Q15",4,.45,"职业成长与跳板","关于你的职业，哪句最像你？",[["现在的工作在推着我成长，PR 还能帮我打开更多国家和岗位的门",100],["工作不算亮眼，但稳定，PR 是一份长期保险",70],["现在是明显的天花板或停滞，回国、换国家才有空间",30],["我不觉得 PR 对我的职业有什么帮助",40]]),
+sc("Q16",5,.55,"生活方式","假设两边收入一样，你更想住在？",[["大城市：凌晨两点想吃什么都能点到，人和事都很快",35],["大城市，但希望节奏慢一点、边界清楚一点",75],["安静的地方：开车10分钟到超市，周末去湖边或山里",100],["说不清，我都想要",60]]),
+sc("Q17",5,.45,"伴侣与家庭","关于伴侣和家庭，你现在的情况是？",[["伴侣在加拿大，我们都想留下",100],["伴侣在加拿大，但对方想回国",30],["伴侣或家人在国内，长期异地",40],["单身，也没有必须考虑的人",70],["有孩子，教育是我最重要的考量",85]])
+];
+const QM=Object.fromEntries(Q.map(q=>[q.id,q]));
+const P1O=[["已有加拿大公民身份","citizen"],["已有枫叶卡（PR）","pr"],["PR 申请已递交 / 在审理中","pr_pending"],["持工签（毕业工签 PGWP 或雇主工签）","work_permit"],["持学签，还没毕业或刚毕业","student"],["其他（探亲、旅游、等待身份、无工作身份）","other"]];
+const P2F=[["years_in_ca","你在加拿大待了多久？",["不到 2 年","2–5 年","5–10 年","10 年以上"]],["province","你现在主要在哪里？",["大多伦多","安省其他","BC","阿省","魁省","曼省或萨省","海洋省","其他"]],["education","你的最高学历是？",["学院文凭（College）","本科","硕士","博士","其他"]],["field","你的专业方向更接近？",["STEM","医护健康","技工与运输","商科金融","教育社科","艺术人文","其他"]]];
+const SKIPA=["Q1","Q3","Q4","Q5"];
+const TYPES={4:["A","主动留下型","你坚定地想要留下，你的问题是留下之后怎么过好。"],3:["B","有条件留下型","你能留下，你也清楚要做什么。把每件事落地，就从“等好运”变成“十拿九稳”。"],2:["C","摇摆待定型","你摇摆不定。你需要给自己一个DDL，倒退每一步该怎么走。"],1:["D","倾向回流型","你其实更适合回国，很多人回流后长出第二段人生。"]};
+const ADV={A:["把身份时间表钉死：工签到期日、材料清单、下一轮可能的抽签窗口，做成一张表贴在你看得见的地方。","把“情感资本”转成“留下来的资产”：一处能长住的房子或租约、一个能持续 3 年的社群、一份写清楚伴侣计划的对话。","开始规划“留下之后”：入籍时间线、职业下一步、要不要换城市——留下不是终点，是换了赛道继续跑。"],
+B:["把条件写成清单：法语/英语分数、工作经验月数、省份、雇主、学历认证，逐项标“已有 / 待补 / 补不了”。","只保留 1 个主通道 + 1 个备选通道，其余全部删掉——同时追三条路的人，通常三条都追不动。","设 12 个月里程碑（每 3 个月一次自查），到期没进展就启动备选，不要拖到工签最后 3 个月。"],
+C:["给这件事一个截止日（建议 90 天），到期按当时掌握的信息做决定，不再等“更多信息”。","回国做一次 **2–3 周的真实体验**，不是探亲旅游：投简历、见两个同行、走一趟你想住的城市的早高峰。","把“不可逆项”单列：伴侣、房子、工签到期、家人健康——这四件事的时间表，比你的感受更能决定答案。"],
+D:["先锁一个国内 offer 或城市，再谈“回不回”——有落点的回流是迁移，没落点的回流是撤退。","把加拿大的经历翻译成国内能听懂的三句话（做过什么、解决过什么问题、能带来什么），别讲“我在国外学了……”。","保留回来的选项：PR 拿到再走、工签留着、远程/跨境岗位——回流不等于关门。"]};
+const WADV={1:["先把三条真实通道列出来（EE 类别定向 / 省提名 / 法语类别），逐条写清门槛与你缺的那一项。","算法语这笔账：12–18 个月、每周多少小时、考试与生活成本，对照 2026 年法语轮 382–435 的分数线，判断值不值。","找一位持牌顾问（RCIC）做一次付费复核，别在论坛里用别人的案例推算自己的命。"],
+2:["90 天支持系统计划：3 个能求助的人、1 个固定社群、1 项每周固定的活动——孤独是结构问题，不是性格问题。","把“想家”具体化：是语言、是饭、是人、还是“我在这里不被需要”？四种解法完全不同。","家人照护提前谈钱和分工，别等到必须回去那天才发现只有你一个人扛。"],
+3:["冬季方案：光照灯、维生素 D、每周三次固定运动、1–2 月安排一次南下——不要靠意志力硬扛五个月。","医疗方案：立刻上家庭医生 waitlist、记住附近 walk-in 诊所、确认公司保险的心理咨询额度。","心理状态连续两周明显下滑，就去看医生或心理咨询，这和“够不够坚强”无关。"],
+4:["做一张真实的收入—开支表：税后、房租、交通、保险、育儿，算出“每月到底剩多少”，不要用印象判断。","盘点职业资本：你的技能在加拿大值多少、在国内值多少、在第三国值多少——三个数字会告诉你答案。","如果 PR 是跳板，就把跳板写具体：哪个国家、什么岗位、需要什么资历、几年后走。"],
+5:["生活方式不是二选一：很多人过的是“加拿大住 + 每年回国两个月”的第三种生活，先确认它对你可不可行。","伴侣问题要谈“五年后我们在哪、做什么”，而不是“你爱不爱我”——前者能谈出方案，后者只能谈出情绪。","有孩子的话，把教育账算成数字：学费、daycare、通勤、升学路径，再决定“教育”是不是真的理由。"]};
+const CARE=["钱：算清每年往返与照护的开销，谁出多少、出多久。","人：和兄弟姐妹、亲属谈定分工，列出可替换的护工或社区资源。","时间：定下每年能回去几次、每次几周，并写进工作与签证计划。"];
+const OTHER={4:"如果你选另一边（回国）：你会更靠近家人，回到熟悉的语言与人情网络和国内职业市场；你放下的，是已经攒下的身份进度、社群和现在的生活节奏。",3:"如果你选另一边（回国）：你会得到更少的悬而未决、更近的家人和熟悉的环境；你放下的，是已经接近的身份进度和多一个国家的选择权。",2:"两边的账都值得摊开：留下，你换来身份与选择权，付出等待与距离；回国，你换来熟悉与近的家人，付出已有的积累与不确定的落点。",1:"如果你选另一边（继续留下）：你会保住身份通道与选择权、较低密度的生活；你要付出的，是更长的等待、持续的不确定，以及与家人的距离。"};
+const f=s=>s.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $=document.getElementById("app");
+let S={ans:{},i:0,t0:0,started:false};
+const KEY="ca_stay_return_v1";
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}};
+const clr=()=>{try{localStorage.removeItem(KEY)}catch(e){}};
+const isA=()=>["citizen","pr"].includes(S.ans.P1);
+const seq=()=>["P1","P2",...Q.map(q=>q.id),"Q18"].filter(id=>!(isA()&&SKIPA.includes(id)));
+
+function start(){const old=load();
+$.innerHTML=`<div class="card"><h1>留在加拿大VS回流？</h1><p><b>拒绝内耗：一键解锁你的『加拿大留/走』心理倾向报告</b> <span class="mu">@怡心在加拿大</span></p><p>请放下外界的杂音和父母的期待，跟随你最真实的第一直觉。让我们剥离焦虑，一起看清你内心深处真正向往的归宿。</p>
+<p class="note">适用于在加拿大就读或已毕业、正在决定“留下拿身份 / 回国”的中国籍（或持中国护照）年轻人。已在加拿大以外定居、已入籍多年决策已完成，或以投资移民、团聚移民为主要路径的人，本测试的权重可能不匹配。</p>
+<button class="btn" id="go">开始（约 4 分钟）</button>${old&&old.ans&&old.ans.P1?`<div class="warn">检测到上次未完成的作答。<br><button class="btn g" id="res">继续上次</button><button class="btn g" id="rs">重新开始</button></div>`:""}</div>`;
+document.getElementById("go").onclick=()=>{S={ans:{},i:0,t0:Date.now(),started:true};save();draw()};
+if(old&&old.ans&&old.ans.P1){document.getElementById("res").onclick=()=>{S=old;draw()};document.getElementById("rs").onclick=()=>{clr();start()}}}
+
+function draw(){const sq=seq();if(S.i>=sq.length)return result();const id=sq[S.i],tot=sq.length;
+let h=`<div class="card"><div class="mu">第 ${S.i+1} / ${tot} 题</div><div class="bar"><i style="width:${(S.i/tot)*100}%"></i></div>`;
+const nx=(lbl,dis)=>`<div class="noprint"><button class="btn g" id="bk" ${S.i?"":"disabled"}>上一题</button><button class="btn" id="nx" ${dis?"disabled":""}>${lbl}</button></div>`;
+if(id==="P1"){h+=`<h2>你现在的身份状态是？</h2>`+P1O.map((o,k)=>`<button class="opt ${S.ans.P1===o[1]?"sel":""}" data-v="${o[1]}">${o[0]}</button>`).join("")+nx("下一题",!S.ans.P1)}
+else if(id==="P2"){const a=S.ans.P2||{};h+=`<h2>再和我讲讲你的情况吧。</h2>`+P2F.map(([k,l,o])=>`<label>${l}<select data-k="${k}"><option value="">请选择</option>${o.map(x=>`<option ${a[k]===x?"selected":""}>${x}</option>`).join("")}</select></label>`).join("")+nx("下一题",!P2F.every(x=>a[x[0]]))}
+else if(id==="Q18"){h+=`<h2>最后一题，不用打分。</h2><p>说一句鼓励自己留下or回流的话吧。</p><textarea id="t18" rows="4" maxlength="200" placeholder="可跳过">${esc(S.ans.Q18||"")}</textarea>`+`<div class="noprint"><button class="btn g" id="bk">上一题</button><button class="btn g" id="sk">跳过</button><button class="btn" id="nx">看结果</button></div>`}
+else{const q=QM[id];let stem=q.s;if(id==="Q4"&&S.ans.P1==="pr_pending")stem="如果你的申请被退回或被要求补材料、再拖一年，你能接受吗？";
+h+=`<h2>${f(stem)}</h2>${q.n?`<p class="mu">${q.n}</p>`:""}`;
+if(q.t==="s"){const v=S.ans[id];h+=`<div class="scale">${[0,1,2,3,4].map(k=>`<button class="dot ${v===k?"sel":""}" data-v="${k}">${k+1}</button>`).join("")}</div><div class="lg">${q.o.map((x,k)=>`${k+1} ${x}`).join(" · ")}</div>`+nx("下一题",v===undefined)}
+else if(q.t==="m"){const v=S.ans[id]||[];h+=`<div class="mu">已选 ${v.length}/4</div>`+q.o.map((o,k)=>`<button class="opt ${v.includes(k)?"sel":""}" data-v="${k}" ${!v.includes(k)&&v.length>=4&&k!==5?'disabled title="最多选 4 项，请先取消一个"':""}>${o[0]}</button>`).join("")+(v.length>=4?`<div class="note">最多选 4 项，请先取消一个</div>`:"")+nx("下一题",!v.length)}
+else{h+=q.o.map((o,k)=>`<button class="opt ${S.ans[id]===k?"sel":""}" data-v="${k}">${o[0]}</button>`).join("")+nx("下一题",S.ans[id]===undefined)}}
+if((S.i+1)%5===0&&id!=="Q18")h+=`<p class="note">相信你的第一直觉。</p>`;
+$.innerHTML=h+`</div>`;
+const go=()=>{S.i++;save();draw();scrollTo(0,0)};
+const bk=document.getElementById("bk");if(bk)bk.onclick=()=>{S.i--;save();draw()};
+const nb=document.getElementById("nx");if(nb)nb.onclick=()=>{if(id==="Q18")S.ans.Q18=document.getElementById("t18").value.trim();go()};
+const sk=document.getElementById("sk");if(sk)sk.onclick=()=>{S.ans.Q18="";go()};
+if(id==="P1")$.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{S.ans.P1=b.dataset.v;save();go()});
+else if(id==="P2")$.querySelectorAll("select").forEach(s=>s.onchange=()=>{S.ans.P2=Object.assign(S.ans.P2||{},{[s.dataset.k]:s.value});save();draw()});
+else if(id!=="Q18"){const q=QM[id];
+if(q.t==="s")$.querySelectorAll(".dot").forEach(b=>b.onclick=()=>{S.ans[id]=+b.dataset.v;save();draw()});
+else if(q.t==="m")$.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const k=+b.dataset.v;let v=(S.ans[id]||[]).slice();
+if(v.includes(k))v=v.filter(x=>x!==k);else if(k===5)v=[5];else{v=v.filter(x=>x!==5);if(v.length>=4)return;
+if(k===0&&S.ans.P1==="student"&&!confirm("你目前是学签身份。这 1 年以上的加拿大全职工作经验（不含学业，co-op/兼职是否计入请谨慎核对）是否真实具备？"))return;v.push(k)}
+S.ans[id]=v;save();draw()});
+else $.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{S.ans[id]=+b.dataset.v;save();setTimeout(go,150)})}}
+
+function qscore(q,a){const v=a[q.id];if(v===undefined)return null;if(q.t==="m")return Math.min(100,v.reduce((s,k)=>s+q.o[k][1],0));if(q.t==="s")return SC[v];return q.o[v][1]}
+function calc(){const a=S.ans,A=isA(),dims={},items={};
+for(let d=1;d<=5;d++){let s=0,list=[];Q.filter(q=>q.d===d&&!(A&&SKIPA.includes(q.id))).forEach(q=>{const x=qscore(q,a);if(x!==null){s+=x*q.w;list.push({q,x})}});dims[d]=s;items[d]=list}
+if(A)dims[1]=90;
+let total=0;if(A){for(let d=2;d<=5;d++)total+=dims[d]*DW[d]/0.76}else for(let d=1;d<=5;d++)total+=dims[d]*DW[d];
+const sq=seq().filter(id=>/^Q\d+$/.test(id)&&id!=="Q18"),done=sq.filter(id=>a[id]!==undefined).length;
+const r={a,A,dims,items,total,done,sc:(id)=>qscore(QM[id],a)};
+const q1=a.Q1||[];
+r.insuf=(a.P1==="student"&&q1.includes(5)&&a.Q2===4)||done<12;
+let lv=total>=72?4:total>=58?3:total>=44?2:1;r.base=lv;const ov=[];
+if(dims[1]<35&&a.Q3===3&&a.P1==="work_permit"){ov.push("O1");lv=Math.min(lv,2)}
+let dn=false;
+if(dims[2]<40&&r.sc("Q6")<=25&&dims[1]>=70){ov.push("O2");dn=true}
+if(a.Q8===2){ov.push("O3");dn=true}
+if(a.Q17===1||a.Q17===2){ov.push("O4");dn=true}
+if(dn)lv-=1;lv=Math.max(1,lv,r.base-2);
+if(A&&dims[2]<45)ov.push("O5");
+r.lv=lv;r.ov=ov;return r}
+
+function radar(d){const c=140,R=95,n=5,P=(k,v)=>{const t=-Math.PI/2+k*2*Math.PI/n;return[c+R*v/100*Math.cos(t),c+R*v/100*Math.sin(t)]};
+let g=[25,50,75,100].map(v=>`<polygon fill="none" stroke="var(--bd)" points="${[0,1,2,3,4].map(k=>P(k,v).join(",")).join(" ")}"/>`).join("");
+g+=[0,1,2,3,4].map(k=>{const[x,y]=P(k,100),[lx,ly]=P(k,122);return`<line x1="${c}" y1="${c}" x2="${x}" y2="${y}" stroke="var(--bd)"/><text x="${lx}" y="${ly}" font-size="12" text-anchor="middle" fill="var(--tx)">${DN[k+1]}</text>`}).join("");
+g+=`<polygon points="${[0,1,2,3,4].map(k=>P(k,d[k+1]).join(",")).join(" ")}" fill="var(--ac2)" fill-opacity=".35" stroke="var(--ac2)" stroke-width="2"/>`;
+g+=[0,1,2,3,4].map(k=>{const[x,y]=P(k,Math.max(d[k+1],0));return`<text x="${x}" y="${y-4}" font-size="11" text-anchor="middle" fill="var(--tx)">${Math.round(d[k+1])}</text>`}).join("");
+return`<svg viewBox="0 0 280 280" style="width:100%;max-width:340px;display:block;margin:auto">${g}</svg>`}
+
+function policy(r){const a=r.a,F=facts,c=F.cutoffs_2026,L=F.latest_draws,R=F.rules,q1=a.Q1||[],fld=(a.P2||{}).field;
+const rg=x=>`${x[0]}–${x[1]}`;let ch=[];
+const cat=fld==="医护健康"?["医护与社会服务（类别定向）",c.healthcare,"healthcare"]:fld==="技工与运输"?["技工 / 运输（类别定向）",c.trades,"trades"]:["高级管理（类别定向）",c.senior_managers,"sm"];
+if(q1.includes(0))ch.push(["CEC（加拿大经验类）",`过去 ${R.category_experience_window_years} 年内累计 1 年以上加拿大 TEER 0–3 工作经验`,`${rg(c.cec)}；最近一轮 ${L.cec.date}，${L.cec.crs} 分，${L.cec.invitations.toLocaleString()} 人`,"你的经验已达门槛；差距在于综合分能否进入这个区间，新计分规则下需重算。"]);
+if(q1.includes(1))ch.push([cat[0],`EE 基本资格 + 类别内工作经验至少 ${R.category_min_experience_years} 年（过去 ${R.category_experience_window_years} 年累计）`,rg(cat[1])+(cat[2]==="trades"?`；运输 ${rg(c.transport)}（${L.transport.date}，${L.transport.crs} 分，${L.transport.invitations} 人）`:""),"需确认你的具体职业确实在已开过轮的类别里，并满足 1 年经验。"]);
+if(q1.includes(2))ch.push(["省提名（PNP）",`省提名在 EE 中加 ${R.pnp_crs_bonus} 分；2026 年配额 ${F.levels_plan.pnp_2026.toLocaleString()}`,`EE + 省提名 ${rg(c.ee_pnp)}；最近一轮 ${L.ee_pnp.date}，${L.ee_pnp.crs} 分，${L.ee_pnp.invitations} 人`,"需要省内雇主、职业或地区条件被该省认可。"+(["大多伦多","安省其他"].includes((a.P2||{}).province)?"你在安省：OINP 原 8 个通道已于 2026-06 关闭，旧计算器与职业清单都已作废。":"")]);
+if(a.Q3<=1||(a.Q3===2&&ch.length<2))ch.push(["法语能力类别",`法语四项均达 CLB ${R.french_clb_required} 即自动符合类别资格，且仍需满足 EE 基本资格（至少 1 年工作经验、语言、学历）`,`${rg(c.french)}（均值约 404）；最近一轮 ${L.french.date}，${L.french.crs} 分，${L.french.invitations.toLocaleString()} 人`,`CRS 加成 +${R.french_crs_bonus.english_clb4_or_below}（英语 CLB4 及以下）或 +${R.french_crs_bonus.english_clb5_plus}（英语 CLB5 及以上）；需要 12–18 个月的投入。`]);
+if(!ch.length)ch.push(["（你目前没有勾选可直接匹配的通道）","先盘点：1 年以上经验、类别、省提名、法语四项中你能补哪一项",`CEC ${rg(c.cec)}；法语 ${rg(c.french)}；省提名 ${rg(c.ee_pnp)}`,"缺的是筹码盘点本身，而不是决心。"]);
+ch=ch.slice(0,2);
+let h=`<table><tr><th>通道</th><th>2026 门槛</th><th>2026 分数线</th><th>你缺什么</th></tr>${ch.map(x=>`<tr>${x.map(y=>`<td>${y}</td>`).join("")}</tr>`).join("")}</table>`;
+if(r.A)h=`<p class="mu">你的身份已锁定，下列通道仅作参考。</p>`+h;
+h+=`<p><b>法语是加速器，不是免死金牌</b>——它能把分数线从 500+ 降到 400 附近，但你仍要满足 EE 的基本资格（至少 1 年工作经验、语言、学历）。</p>`;
+h+=`<p class="note">池子现状（${F.pool.as_of}）：EE 候选池 ${F.pool.size.toLocaleString()} 人；481 分及以上 ${F.pool.gte_481.toLocaleString()} 人（20%）；501 分及以上 ${F.pool.gte_501.toLocaleString()} 人（9%）。2026 年 EE（Federal High Skilled）配额 ${F.levels_plan.federal_high_skilled_2026.toLocaleString()}，PR 总目标 ${F.levels_plan.total_pr_2026.toLocaleString()}。</p>`;
+h+=`<div class="warn"><b>不确定性声明：</b>2026-11-03 起 EE 计分规则调整，抽签暂停约两周做分数重算，新分数线尚未形成，任何“多少分能上岸”的说法目前都只是估算。</div>`;
+h+=`<ul class="note">${F.changes.map(x=>`<li>${x.date}：${x.note}</li>`).join("")}</ul>`;
+return h+`<p class="note">${F.disclaimer}</p>`}
+
+function result(){const r=calc(),a=r.a,d=r.dims;let h="";const O=r.ov,card=(t,b)=>`<div class="card"><h2>${t}</h2>${b}</div>`;
+const tz=Date.now()-S.t0<15000?`<div class="warn">作答速度很快，结果仅供参考。</div>`:"";
+if(r.insuf){h=card("现在还不能给你一个有意义的判断",`<p>你缺的不是决心，是三个具体信息：</p><ol><li>你的 PGWP 语言与专业资格条件是否满足（大学本科及以上需 CLB 7，学院需 CLB 5，并受专业领域限制）。</li><li>你是否有 1 年以上的加拿大 TEER 0–3 工作经验，或其他可用的筹码。</li><li>你英语（或法语）的真实成绩——先正式考一次。</li></ol>${tz}`)+card("政策现实对照",policy(r));
+}else{const[code,name,dg]=TYPES[r.lv];
+const best=Object.keys(d).map(Number).sort((x,y)=>d[y]-d[x])[0];
+const wk=Object.keys(d).map(Number).filter(k=>!(r.A&&k===1)).sort((x,y)=>d[x]-d[y])[0];
+const bi=(r.items[best]||[]).slice().sort((x,y)=>y.x-x.x)[0];
+const title=O.includes("O5")?`<h2>你已经留下了，现在要解决的是另一件事</h2>`:"";
+h+=card("你的倾向",`${title}<div class="big">${Math.round(r.total)}<span class="mu" style="font-size:16px"> / 100 留下倾向分</span></div><div class="bar"><i style="width:${r.total}%"></i></div><span class="tag">${code}｜${name}</span><p>${dg}</p><p class="note">分数只描述倾向，不描述对错，也不是能力或价值判断。</p>${tz}`);
+if(Math.abs(d[1]-d[2])>=25)h+=card("一句话反差",`<p style="font-size:18px"><b>${d[1]>d[2]?"你能留下来，但你不会因此更快乐。":"你想留下，但你需要拓宽路径。"}</b></p>`);
+h+=card("五维雷达图",radar(d));
+h+=card("三个驱动因素",`<ul><li><b>最强支撑项：</b>${DN[best]}（${Math.round(d[best])}）${bi?`，其中“${bi.q.nm}”最高——这是你最硬的底牌。`:"，身份已锁定——这是你最硬的底牌。"}</li><li><b>最大缺口：</b>${DN[wk]}（${Math.round(d[wk])}）——这是真正在拖你的那件事。</li><li><b>反差：</b>${Math.abs(d[1]-d[2])>=25?(d[1]>d[2]?"身份可行性高于情感与归属，差距超过 25 分。":"情感与归属高于身份可行性，差距超过 25 分。"):"身份可行性与情感归属相差不到 25 分，未触发反差句。"}</li></ul>`);
+let ex="";
+if(a.P1==="student")ex+=`<div class="warn"><b>你现在的最优动作通常不是决定去留，而是先把 PGWP 的语言与专业资格条件确认清楚。</b></div>`;
+if(a.P1==="other")ex+=`<div class="warn"><b>身份窗口风险：</b>没有合法工作身份时，可走的通道窗口很窄。先弄清你当前身份的到期日、能否续签或转换，再谈其他。</div>`;
+if(O.includes("O1"))ex+=`<div class="warn"><b>时间窗口风险：</b>结论上限锁在“摇摆待定”。工签到期日 = 你真正的决策截止日。</div>`;
+if(O.includes("O2"))ex+=`<div class="warn"><b>身份解决了，生活没解决。</b>身份可行性很高，但情感与归属偏低，且可求助的人很少。这是这份测试里最重要的一条诊断：留下的难点已经不在“能不能”，而在“怎么过”。</div>`;
+if(O.includes("O4"))ex+=`<div class="warn"><b>关系是决定项。</b>这不是一个人能算完的账。</div>`;
+if(a.Q3>=2&&a.Q3!==undefined&&!r.A)ex+=`<p class="note">这不影响你留下，只影响你用什么方式留下。</p>`;
+if(a.Q17===4)ex+=`<div class="warn"><b>教育账：</b>加拿大公立 K–12 与国内升学路径各有差异；还要算 daycare 成本。“教育理由”往往需要比其他理由更长的验证期，建议用具体数字来算。</div>`;
+if(ex)h+=card("需要你留意的几件事",ex);
+h+=card("政策现实对照（截至 2026-11-07）",policy(r));
+h+=card("当前最该做的 3 件事",`<ol>${ADV[code].map(x=>`<li>${f(x)}</li>`).join("")}</ol><h3>针对最大缺口：${DN[wk]}</h3><ul>${WADV[wk].map(x=>`<li>${f(x)}</li>`).join("")}</ul>${O.includes("O3")?`<h3>照护方案（钱、人、时间）</h3><ul>${CARE.map(x=>`<li>${x}</li>`).join("")}</ul>`:""}<h3>两边的账</h3><p>${OTHER[r.lv]}</p>`);
+}
+const ck=(arr)=>arr.map(x=>`<label class="ck"><input type="checkbox"> ${x}</label>`).join("");
+if(!r.insuf)h+=card("30 天 / 90 天行动清单",`<h3>30 天</h3>${ck(["把签证到期日、材料清单和你的主通道写进一张表。","核对 IRCC 官网信息，或预约一次 RCIC 咨询。","做一份真实的月度收入—开支表。"])}<h3>90 天</h3>${ck(["对照里程碑自查一次：继续、换备选通道，或调整去留。","建好支持系统：3 个能求助的人 + 1 个固定社群。","和伴侣或家人谈一次“五年后我们各自在哪、做什么”。"])}`);
+const t=a.Q18;
+if(t){h+=card("你自己写下的那句话",`<p>你自己写下的那句话是……“${esc(t)}”</p>`);
+let tx=t.replace(/不(想|要|愿|打算|会)?回|别回/g,"留下"),rt=/回国|回流|回去|回家/.test(tx),st=/留下|留在|留加|扎根|留/.test(tx);
+if(!r.insuf&&((rt&&!st&&r.total>=58)||(st&&!rt&&r.total<44)))h+=`<div class="card warn"><b>你的直觉和你的账不一致。</b>你写下的话和上面的分数指向了不同的方向。这条反馈值得多看一眼：是账里漏了什么，还是直觉里夹着别的声音？</div>`}
+const vals=r.items[2].concat(r.items[3],r.items[4],r.items[5],r.items[1]).map(x=>x.x);
+if(vals.length>8&&(vals.every(x=>x>=50)||vals.every(x=>x<=50)))h+=card("答案的一致性",`<p>你的答案非常一致，这通常说明你心里早有答案，只是还没允许自己说出来。</p>`);
+h+=card("边界与免责",`<p>${FIN}</p>`)+`<div class="card noprint"><h2>把这个测试答案保存成一份决策记录</h2><p class="note">记录日期：${new Date().toLocaleDateString("zh-CN")}；政策基准日：${facts.as_of}。点击后在打印窗口选择“另存为 PDF”。</p><button class="btn" onclick="print()">导出 PDF</button><button class="btn g" id="again">重新测试</button></div>`;
+$.innerHTML=h;scrollTo(0,0);document.getElementById("again").onclick=()=>{clr();S={ans:{},i:0,t0:0};start()}}
+start();
+</script></body></html>
